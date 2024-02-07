@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="7.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.17.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 

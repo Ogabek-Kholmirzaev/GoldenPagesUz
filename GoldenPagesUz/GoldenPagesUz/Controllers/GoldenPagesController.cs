@@ -1,16 +1,15 @@
-﻿using GoldenPagesUz.Models;
-using GoldenPagesUz.Services;
+﻿using GoldenPagesUz.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoldenPagesUz.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CompaniesController : ControllerBase
+public class GoldenPagesController : ControllerBase
 {
     private readonly ICompanyService _companyService;
 
-    public CompaniesController(ICompanyService companyService)
+    public GoldenPagesController(ICompanyService companyService)
     {
         _companyService = companyService;
     }
@@ -18,11 +17,11 @@ public class CompaniesController : ControllerBase
     [HttpGet("category/{categoryId:int}/excel")]
     public async Task<ActionResult> Get(int categoryId)
     {
-        Console.WriteLine(DateTime.Now.ToString("O"));
+        Console.WriteLine("\n" + DateTime.Now.ToString("O") + "\n");
 
         var excelFile = await _companyService.GetExcelByCategoryIdAsync(categoryId);
 
-        Console.WriteLine(DateTime.Now.ToString("O") + "\n");
+        Console.WriteLine("\n" + DateTime.Now.ToString("O") + "\n");
 
         return File(
             excelFile.FileBytes,

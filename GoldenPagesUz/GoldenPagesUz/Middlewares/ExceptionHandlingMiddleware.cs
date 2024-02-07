@@ -1,4 +1,5 @@
 ﻿using GoldenPagesUz.Exceptions;
+using Newtonsoft.Json;
 
 namespace GoldenPagesUz.Middlewares;
 
@@ -20,11 +21,6 @@ public class ExceptionHandlingMiddleware
         catch (CategoryNotFoundException e)
         {
             httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-            await httpContext.Response.WriteAsJsonAsync(e.Message);
-        }
-        catch (Exception e)
-        {
-            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
             await httpContext.Response.WriteAsJsonAsync(e.Message);
         }
     }

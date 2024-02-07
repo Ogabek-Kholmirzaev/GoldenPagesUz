@@ -9,6 +9,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddScoped<IYpService, YpService>();
 
 var app = builder.Build(); 
  
