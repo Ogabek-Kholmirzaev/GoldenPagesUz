@@ -59,7 +59,7 @@ public class CompanyService : ICompanyService
             return new ExcelFileModel()
             {
                 FileBytes = await package.GetAsByteArrayAsync(),
-                FileName = $"companies-category-{categoryId} {DateTime.UtcNow.AddHours(5):yyyy-MM-dd hh-mm-ss}.xlsx"
+                FileName = $"gp-category-{categoryId} {DateTime.UtcNow.AddHours(5):yyyy-MM-dd hh-mm-ss}.xlsx"
             };
         }
     }
