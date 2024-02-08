@@ -1,4 +1,5 @@
-﻿using GoldenPagesUz.Models;
+﻿using System.Text.RegularExpressions;
+using GoldenPagesUz.Models;
 using GoldenPagesUz.Models.YellowPages;
 using Newtonsoft.Json;
 using OfficeOpenXml;
@@ -131,7 +132,7 @@ public class YpService : IYpService
 
     private async Task<List<Company>> GetCompaniesByCategoryUrlAsync(IWebDriver driver, string categoryUrl)
     {
-        int pageNumber = 1, pageSize = 100;
+        int pageNumber = 1, pageSize = 50;
         var companies = new List<Company>();
 
         while (true)
@@ -146,7 +147,16 @@ public class YpService : IYpService
             var content = scriptElement != null ? GetAttribute(scriptElement, "innerHTML")?.Trim() : string.Empty;
 
             //number of times "position" word is found in the json content string
-            var count = content?.Split(new string[] { "position" }, StringSplitOptions.None).Length - 1;
+            var count = 0;
+            var match = Regex.Match(content ?? string.Empty, "position");
+            while (match.Success)
+            {
+                count++;
+                if (count > 1)
+                    break;
+
+                match = match.NextMatch();
+            }
             
             if (count == 0)
             {
