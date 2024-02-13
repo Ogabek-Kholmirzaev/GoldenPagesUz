@@ -1,6 +1,5 @@
 ﻿using GoldenPagesUz.Services;
 using Microsoft.AspNetCore.Mvc;
-using OpenQA.Selenium.Edge;
 
 namespace GoldenPagesUz.Controllers;
 
@@ -15,7 +14,7 @@ public class YellowPagesController : ControllerBase
         _ypService = ypService;
     }
 
-    [HttpGet("category/companies")]
+    [HttpGet("category/companies/excel")]
     public async Task<ActionResult> GetCompaniesByCategoryUrlAsync([FromQuery] string categoryUrl)
     {
         Console.WriteLine("\n" + DateTime.Now.ToString("O") + "\n");
