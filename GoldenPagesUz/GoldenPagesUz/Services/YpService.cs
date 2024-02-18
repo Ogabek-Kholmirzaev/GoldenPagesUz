@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using GoldenPagesUz.Data.Entities;
 using GoldenPagesUz.Models;
 using GoldenPagesUz.Models.YellowPages;
 using Newtonsoft.Json;
@@ -12,10 +13,21 @@ namespace GoldenPagesUz.Services;
 public class YpService : IYpService
 {
     const string RubricsCategoriesClassName = "rubricsCategories";
+    const string ParentCategoriesClassName = "col-md-4";
+    const string BaseUrl = "https://yellowpages.uz";
 
-    public Task<List<string>> GetSubCategoriesByCategoryUrlAsync(IWebDriver driver, string categoryUrl)
+    int IdNumber = 1;
+
+    private readonly IWebHostEnvironment _hostingEnvironment;
+
+    public YpService(IWebHostEnvironment hostingEnvironment)
     {
-        var subCategories = new List<string>();
+        _hostingEnvironment = hostingEnvironment;
+    }
+
+    public Task<List<Category>> GetSubCategoriesByCategoryUrlAsync(IWebDriver driver, string categoryUrl, long? parentCategoryId = null)
+    {
+        var subCategories = new List<Category>();
 
         driver.Navigate().GoToUrl(categoryUrl);
 
@@ -23,14 +35,22 @@ public class YpService : IYpService
         {
             var divRubricsCategories = driver.FindElement(By.ClassName(RubricsCategoriesClassName));
             var aElements = divRubricsCategories.FindElements(By.TagName("a"));
-            
+
             foreach (var aElement in aElements)
             {
                 try
                 {
                     var href = aElement.GetAttribute("href");
                     if (!string.IsNullOrWhiteSpace(href))
-                        subCategories.Add(href);
+                    {
+                        subCategories.Add(new Category
+                        {
+                            Id = IdNumber++,
+                            Name = aElement.Text,
+                            Url = href,
+                            ParentCategoryId = parentCategoryId
+                        });
+                    }
 
                 }
                 catch (StaleElementReferenceException e)
@@ -39,7 +59,7 @@ public class YpService : IYpService
         }
         catch (NoSuchElementException)
         {
-            return Task.FromResult(new List<string>());
+            return Task.FromResult(new List<Category>());
         }
 
         return Task.FromResult(subCategories);
@@ -52,7 +72,11 @@ public class YpService : IYpService
         var subCategories = await GetSubCategoriesByCategoryUrlAsync(driver, categoryUrl);
         if (subCategories.Count == 0)
         {
-            subCategories.Add(categoryUrl);
+            subCategories.Add(new Category
+            {
+                Name = string.Empty,
+                Url = categoryUrl
+            });
         }
         
         var ypCategoryCompanies = new List<YpCategoryCompany>();
@@ -60,8 +84,8 @@ public class YpService : IYpService
         {
             ypCategoryCompanies.Add(new YpCategoryCompany
             {
-                CategoryUrl = subCategory,
-                Companies = await GetCompaniesByCategoryUrlAsync(driver, subCategory)
+                CategoryUrl = subCategory.Url,
+                Companies = await GetCompaniesByCategoryUrlAsync(driver, subCategory.Url)
             });
         }
 
@@ -130,10 +154,55 @@ public class YpService : IYpService
         }
     }
 
-    private async Task<List<Company>> GetCompaniesByCategoryUrlAsync(IWebDriver driver, string categoryUrl)
+    public async Task<List<Category>> GetCategoriesAsync()
+    {
+        var driver = new EdgeDriver();
+        driver.Navigate().GoToUrl(BaseUrl);
+
+        var categories = new List<Category>();
+        var result = new List<Category>();
+        var parentCategoriesElements = driver.FindElements(By.ClassName(ParentCategoriesClassName));
+
+        foreach (var parentCategoriesElement in parentCategoriesElements)
+        {
+            var aTags = parentCategoriesElement.FindElements(By.TagName("a"));
+            var tag = aTags[1];
+
+            var href = GetAttribute(tag, "href");
+            var name = tag.Text;
+
+            categories.Add(new Category
+            {
+                Id = IdNumber++,
+                Name = name,
+                Url = href,
+            });
+
+            Console.WriteLine($"{href} {name}");
+        }
+
+        result.AddRange(categories);
+
+        foreach (var category in categories)
+        {
+            var subCategories = await GetSubCategoriesByCategoryUrlAsync(driver, category.Url, category.Id);
+            result.AddRange(subCategories);
+        }
+
+        driver.Quit();
+
+        var path = Path.Combine(_hostingEnvironment.ContentRootPath, "wwwroot", "categories.json");
+        var json = JsonConvert.SerializeObject(result, Formatting.Indented);
+
+        await File.WriteAllTextAsync(path, json);
+
+        return result;
+    }
+
+    private async Task<List<CompanyModel>> GetCompaniesByCategoryUrlAsync(IWebDriver driver, string categoryUrl)
     {
         int pageNumber = 1, pageSize = 50;
-        var companies = new List<Company>();
+        var companies = new List<CompanyModel>();
 
         while (true)
         {
@@ -171,14 +240,14 @@ public class YpService : IYpService
                 //TODO: parser boshqa bo'ladi
                 var ypJsonParser = JsonConvert.DeserializeObject<YpJsonParser<MainEntityV2>>(content);
 
-                companies.Add(new Company(ypJsonParser.MainEntity.ItemListElement.Item));
+                companies.Add(new CompanyModel(ypJsonParser.MainEntity.ItemListElement.Item));
                 break;
             }
             else
             {
                 var ypJsonParser = JsonConvert.DeserializeObject<YpJsonParser<MainEntityV1>>(content);
 
-                companies.AddRange(ypJsonParser.MainEntity.ItemListElement.Select(x => new Company(x.Item)).ToList());
+                companies.AddRange(ypJsonParser.MainEntity.ItemListElement.Select(x => new CompanyModel(x.Item)).ToList());
 
                 if (ypJsonParser.MainEntity.ItemListElement.Count < pageSize)
                     break;
@@ -190,9 +259,9 @@ public class YpService : IYpService
         return companies;
     }
 
-    private Task<List<Company>> GetCompaniesByTagsAsync(IWebDriver driver, string url)
+    private Task<List<CompanyModel>> GetCompaniesByTagsAsync(IWebDriver driver, string url)
     {
-        var companies = new List<Company>();
+        var companies = new List<CompanyModel>();
         var companiesElements = driver.FindElements(By.ClassName("organizationBlock"));
 
         foreach (var companiesElement in companiesElements)
@@ -227,7 +296,7 @@ public class YpService : IYpService
                 Telephone = aOnClick != null ? SeparatePhoneNumber(aOnClick) : null
             };
 
-            companies.Add(new Company(ypItem));
+            companies.Add(new CompanyModel(ypItem));
         }
 
         return Task.FromResult(companies);

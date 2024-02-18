@@ -28,4 +28,11 @@ public class YellowPagesController : ControllerBase
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             excelFile.FileName);
     }
+
+    [HttpGet("categories")]
+    public async Task<ActionResult> GetCategoriesAsync()
+    {
+        var categories = await _ypService.GetCategoriesAsync();
+        return Ok(categories);
+    }
 }

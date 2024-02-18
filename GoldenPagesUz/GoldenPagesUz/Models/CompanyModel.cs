@@ -2,7 +2,7 @@
 
 namespace GoldenPagesUz.Models;
 
-public class Company
+public class CompanyModel
 {
     public string Name { get; set; }
     public string Address { get; set; }
@@ -10,7 +10,7 @@ public class Company
     public string YandexMapUrl { get; set; }
     public string Url { get; set; }
 
-    public Company(ItemListElement itemListElement)
+    public CompanyModel(ItemListElement itemListElement)
     {
         Name = itemListElement.Item?.Name ?? "Нет данных";
         Address = itemListElement.Item?.Address?.StreetAddress ?? "Нет данных";
@@ -24,7 +24,7 @@ public class Company
         Url = itemListElement.Item?.SameAs ?? "Нет данных";
     }
 
-    public Company(YpItem? ypItem)
+    public CompanyModel(YpItem? ypItem)
     {
         Name = ypItem?.Name ?? "Нет данных";
         Address = ypItem?.Address?.StreetAddress ?? "Нет данных";

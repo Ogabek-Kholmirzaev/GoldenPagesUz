@@ -3,5 +3,5 @@
 public class YpCategoryCompany
 {
     public string CategoryUrl { get; set; }
-    public List<Company> Companies { get; set; }
+    public List<CompanyModel> Companies { get; set; }
 }

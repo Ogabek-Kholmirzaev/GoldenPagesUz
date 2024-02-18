@@ -1,11 +1,16 @@
+using GoldenPagesUz.Data;
 using GoldenPagesUz.Middlewares;
 using GoldenPagesUz.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<YpDbContext>(options =>
+    options.UseSqlite("Data source=yp.db"));
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<ICompanyService, CompanyService>();

@@ -64,9 +64,9 @@ public class CompanyService : ICompanyService
         }
     }
 
-    public async Task<List<Company>> GetCompaniesByCategoryIdAsync(int categoryId)
+    public async Task<List<CompanyModel>> GetCompaniesByCategoryIdAsync(int categoryId)
     {
-        var companies = new List<Company>();
+        var companies = new List<CompanyModel>();
         var page = 1;
 
         while (true)
@@ -94,7 +94,7 @@ public class CompanyService : ICompanyService
 
             var itemListElements = JsonConvert.DeserializeObject<List<ItemListElement>>(listOfItemListElementJson);
             if (itemListElements?.Count > 0)
-                companies.AddRange(itemListElements.Select(itemListElement => new Company(itemListElement)));
+                companies.AddRange(itemListElements.Select(itemListElement => new CompanyModel(itemListElement)));
 
             page++;
         }

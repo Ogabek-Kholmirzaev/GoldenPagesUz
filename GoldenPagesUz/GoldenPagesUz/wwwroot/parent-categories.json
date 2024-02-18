@@ -1,0 +1,314 @@
+[
+  {
+    "id": 1,
+    "name": "Иностранные компании",
+    "url": "https://www.yellowpages.uz/strani",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 2,
+    "name": "Автомобили",
+    "url": "https://www.yellowpages.uz/razdel/avtomobili",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 3,
+    "name": "Административные органы",
+    "url": "https://www.yellowpages.uz/razdel/administrativnye-organy",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 4,
+    "name": "Бизнес услуги и банки",
+    "url": "https://www.yellowpages.uz/razdel/biznes-uslugi-i-banki",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 5,
+    "name": "Бытовая техника",
+    "url": "https://www.yellowpages.uz/razdel/bytovaya-tehnika",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 6,
+    "name": "Бытовые услуги",
+    "url": "https://www.yellowpages.uz/razdel/bytovye-uslugi",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 7,
+    "name": "Гостиницы и туризм",
+    "url": "https://www.yellowpages.uz/razdel/gostinicy-i-turizm",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 8,
+    "name": "Досуг и отдых",
+    "url": "https://www.yellowpages.uz/razdel/dosug-i-otdyh",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 9,
+    "name": "Инструменты",
+    "url": "https://www.yellowpages.uz/razdel/instrumenty",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 10,
+    "name": "Информационные технологии",
+    "url": "https://www.yellowpages.uz/razdel/informacionnye-tehnologii",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 11,
+    "name": "Коммунальные услуги",
+    "url": "https://www.yellowpages.uz/razdel/kommunalnye-uslugi",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 12,
+    "name": "Компьютеры, оргтехника",
+    "url": "https://www.yellowpages.uz/razdel/kompyutery-orgtehnika",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 13,
+    "name": "Легкая промышленность",
+    "url": "https://www.yellowpages.uz/razdel/legkaya-promyshlennost",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 14,
+    "name": "Мебель",
+    "url": "https://www.yellowpages.uz/razdel/mebel",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 15,
+    "name": "Медицина",
+    "url": "https://www.yellowpages.uz/razdel/medicina",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 16,
+    "name": "Научные организации",
+    "url": "https://www.yellowpages.uz/razdel/nauchnye-organizacii",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 17,
+    "name": "Нефтегазовая отрасль",
+    "url": "https://www.yellowpages.uz/razdel/neftegazovaya-otrasl",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 18,
+    "name": "Оборудование",
+    "url": "https://www.yellowpages.uz/razdel/oborudovanie",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 19,
+    "name": "Образование",
+    "url": "https://www.yellowpages.uz/razdel/obrazovanie",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 20,
+    "name": "Охранные услуги",
+    "url": "https://www.yellowpages.uz/razdel/ohrannye-uslugi",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 21,
+    "name": "Пищевое производство",
+    "url": "https://www.yellowpages.uz/razdel/pischevoe-proizvodstvo",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 22,
+    "name": "Полезные ископаемые",
+    "url": "https://www.yellowpages.uz/razdel/poleznye-iskopaemye",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 23,
+    "name": "Почта и связь",
+    "url": "https://www.yellowpages.uz/razdel/pochta-i-svyaz",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 24,
+    "name": "Представительства",
+    "url": "https://www.yellowpages.uz/razdel/predstavitelstva",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 25,
+    "name": "Реклама, полиграфия",
+    "url": "https://www.yellowpages.uz/razdel/reklama-poligrafiya",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 26,
+    "name": "Рестораны и кафе",
+    "url": "https://www.yellowpages.uz/razdel/restorany-i-kafe",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 27,
+    "name": "Сельское хозяйство",
+    "url": "https://www.yellowpages.uz/razdel/selskoe-hozyajstvo",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 28,
+    "name": "Сми",
+    "url": "https://www.yellowpages.uz/razdel/smi",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 29,
+    "name": "Спорт",
+    "url": "https://www.yellowpages.uz/razdel/sport",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 30,
+    "name": "Справочные организации",
+    "url": "https://www.yellowpages.uz/razdel/spravochnye-organizacii",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 31,
+    "name": "Строительство и ремонт",
+    "url": "https://www.yellowpages.uz/razdel/stroitelstvo-i-remont",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 32,
+    "name": "Сырье и расходные материалы",
+    "url": "https://www.yellowpages.uz/razdel/syre-i-rashodnye-materialy",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 33,
+    "name": "Товары",
+    "url": "https://www.yellowpages.uz/razdel/tovary",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 34,
+    "name": "Транспорт",
+    "url": "https://www.yellowpages.uz/razdel/transport",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 35,
+    "name": "Упаковка",
+    "url": "https://www.yellowpages.uz/razdel/upakovka",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 36,
+    "name": "Фирменная продукция",
+    "url": "https://www.yellowpages.uz/razdel/firmennaya-produkciya",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 37,
+    "name": "Химическая отрасль",
+    "url": "https://www.yellowpages.uz/razdel/himicheskaya-otrasl",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 38,
+    "name": "Энергетика и приборы",
+    "url": "https://www.yellowpages.uz/razdel/energetika-i-pribory",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  },
+  {
+    "id": 39,
+    "name": "Юридические услуги",
+    "url": "https://www.yellowpages.uz/razdel/yuridicheskie-uslugi",
+    "parentCategoryId": null,
+    "parentCategory": null,
+    "subCategories": null
+  }
+]
