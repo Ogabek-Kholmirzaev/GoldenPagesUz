@@ -35,4 +35,11 @@ public class YellowPagesController : ControllerBase
         var categories = await _ypService.GetCategoriesAsync();
         return Ok(categories);
     }
+
+    [HttpGet("companies")]
+    public async Task<ActionResult> GetCompaniesByCategoryUrlAsJsonAsync([FromQuery] string categoryUrl)
+    {
+        var companies = await _ypService.GetCompaniesByCategoryUrlAsync(categoryUrl);
+        return Ok(companies);
+    }
 }

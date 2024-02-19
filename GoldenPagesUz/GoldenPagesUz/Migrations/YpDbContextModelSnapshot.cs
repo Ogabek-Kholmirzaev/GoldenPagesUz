@@ -49735,6 +49735,42 @@ namespace GoldenPagesUz.Migrations
                         });
                 });
 
+            modelBuilder.Entity("GoldenPagesUz.Data.Entities.Company", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("CategoryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Telephone")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("YandexMapUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Companies");
+                });
+
             modelBuilder.Entity("GoldenPagesUz.Data.Entities.Category", b =>
                 {
                     b.HasOne("GoldenPagesUz.Data.Entities.Category", "ParentCategory")
@@ -49744,8 +49780,21 @@ namespace GoldenPagesUz.Migrations
                     b.Navigation("ParentCategory");
                 });
 
+            modelBuilder.Entity("GoldenPagesUz.Data.Entities.Company", b =>
+                {
+                    b.HasOne("GoldenPagesUz.Data.Entities.Category", "Category")
+                        .WithMany("Compaies")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("GoldenPagesUz.Data.Entities.Category", b =>
                 {
+                    b.Navigation("Compaies");
+
                     b.Navigation("SubCategories");
                 });
 #pragma warning restore 612, 618

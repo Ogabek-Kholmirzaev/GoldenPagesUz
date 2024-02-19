@@ -1,28 +1,39 @@
 ﻿using System.Text.RegularExpressions;
+using GoldenPagesUz.Data;
 using GoldenPagesUz.Data.Entities;
+using GoldenPagesUz.Exceptions;
 using GoldenPagesUz.Models;
 using GoldenPagesUz.Models.YellowPages;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Edge;
+using Serilog;
 
 namespace GoldenPagesUz.Services;
 
 public class YpService : IYpService
 {
+    private readonly YpDbContext _ypDbContext;
+    private readonly HttpClient _httpClient;
+
     const string RubricsCategoriesClassName = "rubricsCategories";
     const string ParentCategoriesClassName = "col-md-4";
     const string BaseUrl = "https://yellowpages.uz";
+    const string ScriptLdJson = "<script type=\"application/ld+json\">";
+    const string CloseScriptLdJson = "</script>";
 
     int IdNumber = 1;
 
     private readonly IWebHostEnvironment _hostingEnvironment;
 
-    public YpService(IWebHostEnvironment hostingEnvironment)
+    public YpService(IWebHostEnvironment hostingEnvironment, YpDbContext ypDbContext, HttpClient httpClient)
     {
         _hostingEnvironment = hostingEnvironment;
+        _ypDbContext = ypDbContext;
+        _httpClient = httpClient;
     }
 
     public Task<List<Category>> GetSubCategoriesByCategoryUrlAsync(IWebDriver driver, string categoryUrl, long? parentCategoryId = null)
@@ -67,29 +78,64 @@ public class YpService : IYpService
 
     public async Task<List<YpCategoryCompany>> GetCompaniesByCategoryUrlAsync(string categoryUrl)
     {
-        var driver = new EdgeDriver();
+        var category = await _ypDbContext.Categories
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(category => category.SubCategories)
+            .FirstOrDefaultAsync(category => category.Url == categoryUrl);
 
-        var subCategories = await GetSubCategoriesByCategoryUrlAsync(driver, categoryUrl);
+        if (category == null)
+            throw new CategoryNotFoundException($"{categoryUrl}");
+
+        var isByWebdriver = false;
+        IWebDriver webDriver = null;
+        if (categoryUrl.Contains("strana") || categoryUrl.Contains("strani"))
+        {
+            isByWebdriver = true;
+            webDriver = new EdgeDriver();
+        }
+
+        var subCategories = category.SubCategories ?? new List<Category>();
         if (subCategories.Count == 0)
         {
-            subCategories.Add(new Category
-            {
-                Name = string.Empty,
-                Url = categoryUrl
-            });
+            subCategories.Add(category);
         }
         
         var ypCategoryCompanies = new List<YpCategoryCompany>();
         foreach (var subCategory in subCategories)
         {
+            var companies = isByWebdriver
+                ? await GetCompaniesByCategoryUrlsByDriverAsync(webDriver, subCategory.Url)
+                : await GetCompaniesByCategoryUrlsAsync(subCategory.Url);
+
+            if (companies?.Count > 0)
+            {
+                var companiesEntities = companies.Select(company => new Company
+                {
+                    Name = company.Name,
+                    Address = company.Address,
+                    Telephone = company.Telephone,
+                    YandexMapUrl = company.YandexMapUrl,
+                    Url = company.Url,
+                    CategoryId = subCategory.Id
+                }).ToList();
+
+                await _ypDbContext.Companies.AddRangeAsync(companiesEntities);
+                await _ypDbContext.SaveChangesAsync();
+            }
+
+            Log.Information($"#category #data\n{subCategory.Id} {subCategory.Name} {subCategory.Url}\n{companies.Count}\n");
+
             ypCategoryCompanies.Add(new YpCategoryCompany
             {
                 CategoryUrl = subCategory.Url,
-                Companies = await GetCompaniesByCategoryUrlAsync(driver, subCategory.Url)
+                Count = companies.Count
             });
         }
 
-        driver.Quit();
+        if (isByWebdriver)
+            webDriver.Quit();
+
         return ypCategoryCompanies;
     }
 
@@ -199,7 +245,7 @@ public class YpService : IYpService
         return result;
     }
 
-    private async Task<List<CompanyModel>> GetCompaniesByCategoryUrlAsync(IWebDriver driver, string categoryUrl)
+    private async Task<List<CompanyModel>> GetCompaniesByCategoryUrlsAsync(string categoryUrl)
     {
         int pageNumber = 1, pageSize = 50;
         var companies = new List<CompanyModel>();
@@ -207,17 +253,15 @@ public class YpService : IYpService
         while (true)
         {
             var url = $"{categoryUrl}?pagenumber={pageNumber}&pagesize={pageSize}";
+            
+            var response = await _httpClient.GetAsync(url);
+            var content = await response.Content.ReadAsStringAsync();
 
-            driver.Navigate().GoToUrl(url);
-
-            var scriptElements = driver.FindElements(By.CssSelector("script[type=\"application/ld+json\"]"));
-            var scriptElement = scriptElements.LastOrDefault();
-
-            var content = scriptElement != null ? GetAttribute(scriptElement, "innerHTML")?.Trim() : string.Empty;
+            var jsonData = SeperateJsonData(content.Trim());
 
             //number of times "position" word is found in the json content string
             var count = 0;
-            var match = Regex.Match(content ?? string.Empty, "position");
+            var match = Regex.Match(jsonData ?? string.Empty, "position");
             while (match.Success)
             {
                 count++;
@@ -229,23 +273,20 @@ public class YpService : IYpService
             
             if (count == 0)
             {
-                var companiesByTags = await GetCompaniesByTagsAsync(driver, url);
-                companies.AddRange(companiesByTags);
-
-                if (companiesByTags.Count < pageSize)
-                    break;
+               //TODO: log
+                break;
             }
             else if (count == 1)
             {
                 //TODO: parser boshqa bo'ladi
-                var ypJsonParser = JsonConvert.DeserializeObject<YpJsonParser<MainEntityV2>>(content);
+                var ypJsonParser = JsonConvert.DeserializeObject<YpJsonParser<MainEntityV2>>(jsonData);
 
                 companies.Add(new CompanyModel(ypJsonParser.MainEntity.ItemListElement.Item));
                 break;
             }
             else
             {
-                var ypJsonParser = JsonConvert.DeserializeObject<YpJsonParser<MainEntityV1>>(content);
+                var ypJsonParser = JsonConvert.DeserializeObject<YpJsonParser<MainEntityV1>>(jsonData);
 
                 companies.AddRange(ypJsonParser.MainEntity.ItemListElement.Select(x => new CompanyModel(x.Item)).ToList());
 
@@ -257,6 +298,43 @@ public class YpService : IYpService
         }
 
         return companies;
+    }
+
+    private async Task<List<CompanyModel>> GetCompaniesByCategoryUrlsByDriverAsync(IWebDriver driver, string categoryUrl)
+    {
+        int pageNumber = 1, pageSize = 50;
+        var companies = new List<CompanyModel>();
+
+        while (true)
+        {
+            var url = $"{categoryUrl}?pagenumber={pageNumber}&pagesize={pageSize}";
+                
+            driver.Navigate().GoToUrl(url);
+
+            var companiesByTags = await GetCompaniesByTagsAsync(driver, url);
+            companies.AddRange(companiesByTags);
+
+            if (companiesByTags.Count < pageSize)
+                break;
+            
+
+            pageNumber++;
+        }
+
+        return companies;
+    }
+
+    private string SeperateJsonData(string content)
+    {
+        if (string.IsNullOrWhiteSpace(content))
+            return string.Empty;
+
+        var startIndex = content.LastIndexOf(ScriptLdJson);
+        var endIndex = content.LastIndexOf(CloseScriptLdJson);
+
+        return startIndex == -1 || endIndex == -1
+            ? string.Empty
+            : content.Substring(startIndex + ScriptLdJson.Length, endIndex - startIndex - ScriptLdJson.Length);
     }
 
     private Task<List<CompanyModel>> GetCompaniesByTagsAsync(IWebDriver driver, string url)

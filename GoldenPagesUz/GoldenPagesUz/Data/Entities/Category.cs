@@ -13,6 +13,7 @@ public class Category
     public Category? ParentCategory { get; set; }
 
     public List<Category> SubCategories { get; set; }
+    public List<Company> Compaies { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(5);
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow.AddHours(5);
