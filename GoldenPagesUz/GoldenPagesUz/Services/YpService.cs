@@ -141,7 +141,16 @@ public class YpService : IYpService
 
     public async Task<ExcelFileModel> GetCompaniesByCategoryUrlToExcelAsync(string categoryUrl)
     {
-        var categoryCompanies = await GetCompaniesByCategoryUrlAsync(categoryUrl);
+        var category = await _ypDbContext.Categories
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(category => category.SubCategories)
+            .ThenInclude(subCategory => subCategory.Compaies)
+            .Include(category => category.Compaies)
+            .FirstOrDefaultAsync(category => category.Url == categoryUrl);
+
+        if (category == null)
+            throw new CategoryNotFoundException($"{categoryUrl}");
 
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         using (var package = new ExcelPackage())
@@ -157,12 +166,16 @@ public class YpService : IYpService
 
             var row = 1;
 
-            foreach (var ypCategoryCompany in categoryCompanies)
+            var categoriesResult = category.ParentCategoryId == null
+                ? category.SubCategories
+                : new List<Category> { category };
+
+            foreach (var categoryResult in categoriesResult)
             {
                 worksheet.Cells[row, 1, row, 6].Merge = true;
                 worksheet.Row(row).Style.Font.Bold = true;
                 worksheet.Cells[row, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                worksheet.Cells[row, 1].Value = ypCategoryCompany.CategoryUrl;
+                worksheet.Cells[row, 1].Value = categoryResult.Url;
 
                 row++;
 
@@ -175,9 +188,9 @@ public class YpService : IYpService
 
                 row++;
 
-                for (var i = 0; i < ypCategoryCompany.Companies.Count; i++)
+                for (var i = 0; i < categoryResult.Compaies.Count; i++)
                 {
-                    var company = ypCategoryCompany.Companies[i];
+                    var company = categoryResult.Compaies[i];
 
                     worksheet.Cells[row, 1].Value = i + 1;
                     worksheet.Cells[row, 2].Value = company.Name;
@@ -195,7 +208,7 @@ public class YpService : IYpService
             return new ExcelFileModel
             {
                 FileBytes = await package.GetAsByteArrayAsync(),
-                FileName = $"yp {DateTime.UtcNow.AddHours(5):yyyy-MM-dd hh-mm-ss}.xlsx"
+                FileName = $"yp {category.Name} {DateTime.UtcNow.AddHours(5):yyyy-MM-dd hh-mm-ss}.xlsx"
             };
         }
     }
